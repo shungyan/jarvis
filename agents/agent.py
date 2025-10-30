@@ -10,7 +10,7 @@ import os
 
 load_dotenv()
 
-JINA_API_KEY=os.getenv("JINA_API_KEY")
+JINA_API_KEY = os.getenv("JINA_API_KEY")
 
 
 root_agent = LlmAgent(
@@ -21,20 +21,36 @@ root_agent = LlmAgent(
     tools=[
         MCPToolset(
             connection_params=StdioConnectionParams(
-                server_params = StdioServerParameters(
-                    command='npx',
-                    args = [
-                        "-y", 
-                        "mcp-remote", 
+                server_params=StdioServerParameters(
+                    command="npx",
+                    args=[
+                        "-y",
+                        "mcp-remote",
                         "https://mcp.jina.ai/sse",
                         "--header",
-                        f"Authorization: Bearer {JINA_API_KEY}"
+                        f"Authorization: Bearer {JINA_API_KEY}",
+                    ],
+                ),
+            ),
+            tool_filter=["read_url", "search_web"],
+        ),
+        MCPToolset(
+            connection_params=StdioConnectionParams(
+                server_params=StdioServerParameters(
+                    command="npx",
+                    args=[
+                        "-y",
+                        "chrome-devtools-mcp@latest",
                     ],
                 ),
             ),
             tool_filter=[
-                "read_url",
-                "search_web"
+                "new_page",
+                "navigate_page",
+                "close_page",
+                "list_pages",
+                "select_page",
+                "take_screenshot",
             ],
         ),
     ],
